@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+
+  bot:
+    image: nefariusmag/chat_gpt:1.0.0
+    restart: always
+    env_file:
+      .env
+    environment:
+      BOT_NAME: ${BOT_NAME}
+      BOT_TOKEN: ${BOT_TOKEN}
+      BOT_AUTHOR_CHAT_ID: ${BOT_AUTHOR_CHAT_ID}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
