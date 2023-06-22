@@ -14,11 +14,11 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     ports:
       - "8080:8080"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.50"
-          memory: 512M
-        reservations:
-          cpus: "0.25"
-          memory: 128M
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "0.50"
+#          memory: 512M
+#        reservations:
+#          cpus: "0.25"
+#          memory: 128M

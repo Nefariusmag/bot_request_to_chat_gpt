@@ -1,4 +1,4 @@
-package erokhin.openai.chat_gpt.services;
+package erokhin.openai.chat_gpt.service;
 
 import erokhin.openai.chat_gpt.config.BotConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +14,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class MessageService extends DefaultAbsSender {
 
     private final BotConfig botConfig;
+    private final Long authorChatId;
 
     public MessageService(BotConfig botConfig) {
         super(new DefaultBotOptions());
         this.botConfig = botConfig;
+        this.authorChatId = botConfig.getAuthorChatId();
     }
-    private void BOT_SLEEP() throws InterruptedException {
+
+    private void botSleep() throws InterruptedException {
         log.debug("Sleeping for 1 second");
         Thread.sleep(1000);
     }
@@ -34,6 +37,10 @@ public class MessageService extends DefaultAbsSender {
         sendText(chatId, "Подождите, ChatGPT думает...");
     }
 
+    public void sendSwitchContext(String chatId) throws InterruptedException {
+        sendText(chatId, "ChatGPT забывает о чем был разговор");
+    }
+
     public void sendText(String chatId, String text) throws InterruptedException {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
@@ -46,7 +53,7 @@ public class MessageService extends DefaultAbsSender {
         try {
             Message sentMessage = execute(message);
             log.debug("Message " + sentMessage + " sent to " + message.getChatId());
-            BOT_SLEEP();
+            botSleep();
         } catch (TelegramApiException e) {
             log.error("Exception: " + e);
         }
@@ -54,8 +61,6 @@ public class MessageService extends DefaultAbsSender {
 
     @Override
     public String getBotToken() {
-        return System.getenv("BOT_TOKEN");
-//        TODO fix this and use spring context
-//        return botConfig.getToken();
+        return botConfig.getToken();
     }
 }
