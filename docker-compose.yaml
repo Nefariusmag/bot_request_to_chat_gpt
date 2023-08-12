@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   bot:
-    image: nefariusmag/chat_gpt:1.0.0
+    image: nefariusmag/chat_gpt:1.0.3
     restart: always
     env_file:
       .env
@@ -12,13 +12,47 @@ services:
       BOT_TOKEN: ${BOT_TOKEN}
       BOT_AUTHOR_CHAT_ID: ${BOT_AUTHOR_CHAT_ID}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_LOGIN: ${DB_LOGIN}
+      DB_PASSWORD: ${DB_PASSWORD}
+    links:
+      - db
+    depends_on:
+      - db
+#    ports:
+#      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+  db:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_LOGIN}
+      POSTGRES_DB: ${DB_NAME}
+    env_file:
+      .env
     ports:
-      - "8080:8080"
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "0.50"
-#          memory: 512M
-#        reservations:
-#          cpus: "0.25"
-#          memory: 128M
+      - "5432:5432"
+    volumes:
+      - database:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+volumes:
+  database: {}

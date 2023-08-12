@@ -2,6 +2,7 @@ package erokhin.openai.chat_gpt.service;
 
 import erokhin.openai.chat_gpt.config.BotConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -37,17 +38,59 @@ public class MessageService extends DefaultAbsSender {
         sendText(chatId, "Подождите, ChatGPT думает...");
     }
 
+    /**
+     * Method to send message that ChatGPT is switching context
+     *
+     * @param chatId The ID of the chat to send the message to
+     * @throws InterruptedException If the thread is interrupted while waiting
+     */
     public void sendSwitchContext(String chatId) throws InterruptedException {
         sendText(chatId, "ChatGPT забывает о чем был разговор");
     }
 
+    /**
+     * Method to send a message indicating that the chatGPT cannot understand the question.
+     * Instructs the user to use a specific format when asking a question.
+     *
+     * @param chatId the ID of the chat to which the message will be sent
+     * @throws InterruptedException if the thread is interrupted while sending the message
+     */
+    public void sendEmptyQuestion(String chatId) throws InterruptedException {
+        sendText(chatId, "Я так не умею. Используйте формат: /ask 'ваш вопрос'");
+    }
+
+    /**
+     * Method to send help message to the user
+     *
+     * @param chatId the unique identifier for the chat
+     * @throws InterruptedException if the method is interrupted
+     */
+    public void sendHelpMessage(String chatId) throws InterruptedException {
+        sendText(chatId, "Я могу переслать ваши вопросы ChatGPT, сохраняю контекст от вопроса к вопросу, но не очень долго. " +
+                "\n\nЧтобы задать вопрос используйте формат:\n/ask 'ваш вопрос'" +
+                "\nЕсли хотите очистить контекст, используйте команду:\n/new");
+    }
+
+    /**
+     * Method to send a text message to a chat
+     *
+     * @param chatId The ID of the chat to send the message to
+     * @param text   The text message to be sent
+     * @throws InterruptedException If the thread is interrupted while sending the message
+     */
     public void sendText(String chatId, String text) throws InterruptedException {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText(text);
+        message.setText(StringEscapeUtils.escapeHtml4(text));
         send(message);
     }
 
+    /**
+     * Private method to send a Telegram message
+     *
+     * @param message The SendMessage object containing the message details
+     * @throws InterruptedException if the thread is interrupted while waiting
+     */
     private void send(SendMessage message) throws InterruptedException {
         message.enableHtml(true);
         try {
@@ -56,6 +99,12 @@ public class MessageService extends DefaultAbsSender {
             botSleep();
         } catch (TelegramApiException e) {
             log.error("Exception: " + e);
+            message.setText("Произошла ошибка, скорее всего в ответе ChatGPT были спец символы которые еще не научился экранировать");
+            try {
+                execute(message);
+            } catch (TelegramApiException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

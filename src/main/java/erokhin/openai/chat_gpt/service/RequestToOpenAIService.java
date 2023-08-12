@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
+@Deprecated
 @Service
 @RequiredArgsConstructor
 public class RequestToOpenAIService {
@@ -23,10 +24,6 @@ public class RequestToOpenAIService {
     @Value("${openchat.url}")
     private String openChatURL;
 
-
-//    public String sendRequest(String question) throws Exception {
-//        return sendRequest(question, "");
-//    }
 
     /**
      * Method to send POST request to OpenAI API used variable where can set body of request

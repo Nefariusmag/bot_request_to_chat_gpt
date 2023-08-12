@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AskChatController {
     private final RequestToOpenAIService requestToOpenAIService;
-//    private final NewRequestToOpenAIService newRequestToOpenAIService;
 
     @PostMapping("/ask-chat")
     public String askChat(@RequestBody RequestQuestion question) throws Exception {
