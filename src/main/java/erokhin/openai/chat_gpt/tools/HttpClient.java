@@ -29,7 +29,7 @@ public class HttpClient {
             return Optional.of(response.body().string());
         } catch (IOException e) {
             handleException(e);
-            return Optional.empty();
+            throw new RuntimeException(e);
         }
     }
 

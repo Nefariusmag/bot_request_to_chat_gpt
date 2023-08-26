@@ -61,6 +61,7 @@ public class RequestOpenAIService {
             log.info("Parsed response");
         } catch (IOException e) {
             handleException(e);
+            throw new RuntimeException(e);
         }
         return text;
     }
